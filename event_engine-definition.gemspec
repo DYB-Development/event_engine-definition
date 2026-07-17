@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
 
   spec.summary = "Plain-Ruby event-definition contract for the EventEngine pipeline"
   spec.description = "The plain-Ruby foundation of the EventEngine pipeline: the EventDefinition DSL and the shared schema-contract value objects, with no Rails dependency. Lightweight domain-pack gems depend on this contract instead of the full dispatch, registry, and Rails-engine machinery that lives in event_engine."
-  spec.homepage = "https://github.com/DYB-Development/event_engine-definition"
+  spec.homepage = "https://eventengine.co"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.2.0"
 
@@ -20,8 +20,8 @@ Gem::Specification.new do |spec|
   spec.metadata["rubygems_mfa_required"] = "true"
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = repo_url
-  spec.metadata["changelog_uri"] = "#{repo_url}/blob/main/CHANGELOG.md"
   spec.metadata["bug_tracker_uri"] = "#{repo_url}/issues"
+  spec.metadata["documentation_uri"] = "#{repo_url}#readme"
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
