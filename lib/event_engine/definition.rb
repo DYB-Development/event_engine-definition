@@ -3,6 +3,7 @@
 require_relative "definition/version"
 
 require "event_engine/process_type"
+require "event_engine/event_definition"
 
 module EventEngine
   module Definition
