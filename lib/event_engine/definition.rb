@@ -8,6 +8,7 @@ require "event_engine/event_definition"
 require "event_engine/event_schema"
 require "event_engine/schema_registry"
 require "event_engine/lifecycle_definition"
+require "event_engine/dsl_compiler"
 
 module EventEngine
   module Definition
