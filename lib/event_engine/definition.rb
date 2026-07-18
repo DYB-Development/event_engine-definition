@@ -13,5 +13,13 @@ require "event_engine/dsl_compiler"
 module EventEngine
   module Definition
     class Error < StandardError; end
+
+    class << self
+      attr_accessor :publisher
+
+      def reset_publisher!
+        @publisher = nil
+      end
+    end
   end
 end
