@@ -12,17 +12,39 @@ module EventEngine
 
     ENVELOPE_KEYS = DslCompiler::RESERVED_INPUT_NAMES
 
-    def self.write(path, event_schema, root_module: "EventEngine", emit: "EventEngine.emit", header: HEADER)
-      File.open(path, "w") do |io|
-        io.write(header)
-        io.write("module #{root_module}\n")
+    def self.write(path, event_schema, root_module: "EventEngine", emit: "EventEngine.emit",
+                   header: HEADER, group_by_domain: true)
+      File.write(
+        path,
+        generate(event_schema, root_module: root_module, emit: emit, header: header, group_by_domain: group_by_domain)
+      )
+    end
 
-        events_by_domain(event_schema).each do |domain, event_names|
-          write_domain_module(io, event_schema, domain, event_names, emit)
-        end
+    def self.generate(event_schema, root_module: "EventEngine", emit: "EventEngine.emit",
+                      header: HEADER, group_by_domain: true)
+      body = group_by_domain ? grouped_body(event_schema, emit) : flat_body(event_schema, emit)
 
-        io.write("end\n")
-      end
+      "#{header}module #{root_module}\n#{body}end\n"
+    end
+
+    def self.grouped_body(event_schema, emit)
+      events_by_domain(event_schema).map do |domain, event_names|
+        helpers = helpers_for(event_schema, domain, event_names, emit, indent: 4)
+
+        "  module #{module_name(domain)}\n#{helpers}  end\n"
+      end.join
+    end
+
+    def self.flat_body(event_schema, emit)
+      events_by_domain(event_schema).map do |domain, event_names|
+        helpers_for(event_schema, domain, event_names, emit, indent: 2)
+      end.join
+    end
+
+    def self.helpers_for(event_schema, domain, event_names, emit, indent:)
+      event_names.map do |event_name|
+        helper(domain, event_schema.latest_for(event_name, domain: domain), emit, indent)
+      end.join
     end
 
     def self.events_by_domain(event_schema)
@@ -31,31 +53,27 @@ module EventEngine
         .transform_values { |pairs| pairs.map { |(_domain, event_name)| event_name }.sort }
     end
 
-    def self.write_domain_module(io, event_schema, domain, event_names, emit)
-      io.write("  module #{module_name(domain)}\n")
-
-      event_names.each do |event_name|
-        write_helper(io, domain, event_schema.latest_for(event_name, domain: domain), emit)
-      end
-
-      io.write("  end\n")
-    end
-
     def self.module_name(domain)
       domain.to_s.split("_").map(&:capitalize).join
     end
 
-    def self.write_helper(io, domain, schema, emit)
-      inputs = schema.required_inputs + schema.optional_inputs
+    def self.helper(domain, schema, emit, indent)
+      pad = " " * indent
+      call_pad = " " * (indent + 2)
+      arg_pad = " " * (indent + 4)
 
-      io.write("    def self.#{schema.event_name}(#{signature(schema)})\n")
-      io.write("      #{emit}(\n")
-      io.write("        #{schema.event_name.inspect},\n")
-      io.write("        domain: #{domain.inspect},\n")
-      io.write("        inputs: #{inputs_hash(inputs)},\n")
-      io.write(envelope_delegation)
-      io.write("      )\n")
-      io.write("    end\n")
+      arguments = [
+        schema.event_name.inspect,
+        "domain: #{domain.inspect}",
+        "inputs: #{inputs_hash(schema)}",
+        *ENVELOPE_KEYS.map { |name| "#{name}: #{name}" }
+      ].map { |argument| "#{arg_pad}#{argument}" }.join(",\n")
+
+      "#{pad}def self.#{schema.event_name}(#{signature(schema)})\n" \
+        "#{call_pad}#{emit}(\n" \
+        "#{arguments}\n" \
+        "#{call_pad})\n" \
+        "#{pad}end\n"
     end
 
     def self.signature(schema)
@@ -66,14 +84,11 @@ module EventEngine
       (required + optional + envelope).join(", ")
     end
 
-    def self.inputs_hash(inputs)
+    def self.inputs_hash(schema)
+      inputs = schema.required_inputs + schema.optional_inputs
       return "{}" if inputs.empty?
 
       "{ #{inputs.map { |name| "#{name}: #{name}" }.join(", ")} }"
-    end
-
-    def self.envelope_delegation
-      ENVELOPE_KEYS.map { |name| "        #{name}: #{name}" }.join(",\n") + "\n"
     end
   end
 end

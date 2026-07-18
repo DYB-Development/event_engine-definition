@@ -36,7 +36,8 @@ class HelperGenerationSmokeTest < DefinitionTestCase
         file.path,
         registry.event_schema,
         root_module: "MarketingEvents",
-        emit: "EventEngine::Definition.publisher.publish"
+        emit: "EventEngine::Definition.publisher.publish",
+        group_by_domain: false
       )
       load file.path
     end
@@ -47,7 +48,7 @@ class HelperGenerationSmokeTest < DefinitionTestCase
     EventEngine::Definition.publisher = publisher
 
     install_generated_helpers([lead_created])
-    MarketingEvents::Marketing.lead_created(email: "lead@example.com")
+    MarketingEvents.lead_created(email: "lead@example.com")
 
     assert_equal(
       { event_name: :lead_created, domain: :marketing, inputs: { email: "lead@example.com" } },

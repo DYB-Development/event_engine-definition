@@ -86,6 +86,16 @@ module EventEngine
       assert_includes source, "# Generated. Do not edit."
     end
 
+    test "a flat layout puts helpers directly under the root module" do
+      source = generate(
+        schema_with(required_inputs: [:cow]),
+        root_module: "MarketingEvents",
+        group_by_domain: false
+      )
+
+      assert_includes source, "module MarketingEvents\n  def self.cow_fed"
+    end
+
     test "passes the domain to emit" do
       source = generate(schema_with(required_inputs: [:cow]))
 
