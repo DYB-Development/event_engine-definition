@@ -96,6 +96,12 @@ module EventEngine
       assert_includes source, "module MarketingEvents\n  def self.cow_fed"
     end
 
+    test "exposes a schema_path accessor pointing at the given schema filename" do
+      source = generate(schema_with(required_inputs: [:cow]), schema_filename: "schema.json")
+
+      assert_includes source, %(def self.schema_path\n    File.expand_path("schema.json", __dir__)\n  end)
+    end
+
     test "passes the domain to emit" do
       source = generate(schema_with(required_inputs: [:cow]))
 

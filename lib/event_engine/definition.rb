@@ -30,3 +30,4 @@ end
 
 require "event_engine/definition/null_publisher"
 require "event_engine/event_engine_helpers_writer"
+require "event_engine/domain_pack_build"

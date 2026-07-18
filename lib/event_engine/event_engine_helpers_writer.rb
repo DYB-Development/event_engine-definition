@@ -13,18 +13,24 @@ module EventEngine
     ENVELOPE_KEYS = DslCompiler::RESERVED_INPUT_NAMES
 
     def self.write(path, event_schema, root_module: "EventEngine", emit: "EventEngine.emit",
-                   header: HEADER, group_by_domain: true)
+                   header: HEADER, group_by_domain: true, schema_filename: nil)
       File.write(
         path,
-        generate(event_schema, root_module: root_module, emit: emit, header: header, group_by_domain: group_by_domain)
+        generate(event_schema, root_module: root_module, emit: emit, header: header,
+                               group_by_domain: group_by_domain, schema_filename: schema_filename)
       )
     end
 
     def self.generate(event_schema, root_module: "EventEngine", emit: "EventEngine.emit",
-                      header: HEADER, group_by_domain: true)
+                      header: HEADER, group_by_domain: true, schema_filename: nil)
       body = group_by_domain ? grouped_body(event_schema, emit) : flat_body(event_schema, emit)
+      body = "#{schema_path_accessor(schema_filename)}#{body}" if schema_filename
 
       "#{header}module #{root_module}\n#{body}end\n"
+    end
+
+    def self.schema_path_accessor(filename)
+      "  def self.schema_path\n    File.expand_path(#{filename.inspect}, __dir__)\n  end\n"
     end
 
     def self.grouped_body(event_schema, emit)
