@@ -36,10 +36,6 @@ module EventEngine
         @event_type = value
       end
 
-      def process_type(value)
-        @process_type = value
-      end
-
       def subject(value)
         @subject = value
       end

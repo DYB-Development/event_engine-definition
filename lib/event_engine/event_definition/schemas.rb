@@ -125,7 +125,6 @@ module EventEngine
           Schema.new(
             event_name: @event_name,
             event_type: @event_type,
-            process_type: @process_type,
             subject: @subject,
             domain: @domain,
             required_inputs: required,
@@ -137,7 +136,6 @@ module EventEngine
         def schema_errors
           errors = []
           validate_identity(errors)
-          validate_process_type(errors)
           validate_payload_fields(errors)
           errors
         end
@@ -151,11 +149,6 @@ module EventEngine
         def validate_identity(errors)
           errors << "event_name is required" unless @event_name
           errors << "event_type is required" unless @event_type
-        end
-
-        def validate_process_type(errors)
-          return if @process_type.nil? || ProcessType.known?(@process_type)
-          errors << "process_type is unknown: #{@process_type.inspect}"
         end
 
         def validate_payload_fields(errors)
