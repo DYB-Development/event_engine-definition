@@ -65,14 +65,30 @@ Read each payload line as: *"the event carries `lead_id`, and its value comes fr
 
 ### Generate the pack (a build step)
 
-Generating a pack compiles your definitions (validating names, reserved fields, and subjects) and writes two files you commit:
+The helper doesn't exist until you generate it. `event_engine-definition` ships a rake task for that. Configure it once, then run it whenever a definition changes:
+
+```ruby
+# Rakefile (in your domain pack)
+require "event_engine/definition"
+load "tasks/event_engine_definition.rake"
+
+EventEngine::Definition.configure do |config|
+  config.definitions_path = "app/event_definitions"             # where your EventDefinitions live
+  config.helper_path      = "lib/generated/marketing_events.rb" # where to write the helper
+  config.root_module      = "MarketingEvents"                   # the module that wraps the helpers
+end
+```
+
+```sh
+$ rake event_engine:definition:dump
+```
+
+The task loads every definition under `definitions_path` — **no Rails required** — and writes two files you commit:
 
 - a `MarketingEvents` module with one typed method per event, and
 - a `schema.json` alongside it — the committed contract downstream consumers read.
 
-This is a build-time step; your app never runs it while serving requests.
-
-> **TODO — no generate task exists yet.** There is currently **no rake task** for this. The helper and `schema.json` are produced only by calling `EventEngine::DomainPackBuild.run` directly (as the test suite does). The pack-facing task that wraps it — the analogue of `event_engine`'s `event_engine:schema:dump` — still needs to be ported into this gem.
+This is a build-time step; your app never runs it while serving requests. If your events declare a `subject`, register them too: `config.subject_registry = EventEngine::SubjectRegistry.define { subject :lead }`.
 
 ### Emit the event (at runtime)
 

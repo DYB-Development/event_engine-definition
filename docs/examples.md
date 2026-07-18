@@ -2,7 +2,7 @@
 
 Each example follows the same three beats: the **data** you already have, the **event** you define, and the **call** you make. For the full DSL reference and how this plugs into `event_engine`, see the [README](../README.md).
 
-The `SalesEvents` / `ProductEvents` modules below are the helpers produced by generating the pack (the build step in the README — note there is **no rake task for this yet**; generation currently runs only through `EventEngine::DomainPackBuild.run`). These examples assume that step has already run, so they focus on defining the event and calling it.
+The `SalesEvents` / `ProductEvents` modules below are the helpers produced by generating the pack — the `rake event_engine:definition:dump` build step in the README. These examples assume that step has already run, so they focus on defining the event and calling it.
 
 ## An event built from multiple inputs
 
