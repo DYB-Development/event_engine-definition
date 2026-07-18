@@ -15,7 +15,11 @@ module EventEngine
     class Error < StandardError; end
 
     class << self
-      attr_accessor :publisher
+      attr_writer :publisher
+
+      def publisher
+        @publisher ||= NullPublisher.new
+      end
 
       def reset_publisher!
         @publisher = nil
@@ -23,3 +27,5 @@ module EventEngine
     end
   end
 end
+
+require "event_engine/definition/null_publisher"
