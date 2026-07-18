@@ -12,7 +12,6 @@ module EventEngine
         :event_name,
         :event_version,
         :event_type,
-        :process_type,
         :subject,
         :domain,
         :required_inputs,
@@ -28,7 +27,6 @@ module EventEngine
             event_name: h[:event_name]&.to_sym,
             event_version: h[:event_version],
             event_type: h[:event_type]&.to_sym,
-            process_type: h[:process_type]&.to_sym,
             subject: h[:subject]&.to_sym,
             domain: h[:domain]&.to_sym,
             required_inputs: Array(h[:required_inputs]).map(&:to_sym),
@@ -59,7 +57,6 @@ module EventEngine
             event_name: event_name,
             event_version: event_version,
             event_type: event_type,
-            process_type: process_type,
             subject: subject,
             domain: domain,
             required_inputs: required_inputs,
@@ -75,7 +72,6 @@ module EventEngine
               event_name: #{event_name.inspect},
               event_version: #{event_version.inspect},
               event_type: #{event_type.inspect},
-              process_type: #{process_type.inspect},
               subject: #{subject.inspect},
               domain: #{domain.inspect},
               required_inputs: #{required_inputs.inspect},
@@ -125,7 +121,6 @@ module EventEngine
           Schema.new(
             event_name: @event_name,
             event_type: @event_type,
-            process_type: @process_type,
             subject: @subject,
             domain: @domain,
             required_inputs: required,
@@ -137,7 +132,6 @@ module EventEngine
         def schema_errors
           errors = []
           validate_identity(errors)
-          validate_process_type(errors)
           validate_payload_fields(errors)
           errors
         end
@@ -151,11 +145,6 @@ module EventEngine
         def validate_identity(errors)
           errors << "event_name is required" unless @event_name
           errors << "event_type is required" unless @event_type
-        end
-
-        def validate_process_type(errors)
-          return if @process_type.nil? || ProcessType.known?(@process_type)
-          errors << "process_type is unknown: #{@process_type.inspect}"
         end
 
         def validate_payload_fields(errors)
