@@ -14,10 +14,6 @@ module EventEngine
         @event_type = value
       end
 
-      def process_type(value)
-        @process_type = value
-      end
-
       def lifecycle(*verbs)
         @verbs = verbs
       end
@@ -46,10 +42,6 @@ module EventEngine
         @event_type
       end
 
-      def declared_process_type
-        @process_type
-      end
-
       private
 
       def build_event(verb)
@@ -63,7 +55,6 @@ module EventEngine
           define_singleton_method(:inspect) { "EventEngine::LifecycleDefinition(#{name})" }
           define_singleton_method(:to_s) { inspect }
           subject template.declared_subject
-          process_type template.declared_process_type if template.declared_process_type
 
           template.inputs.each do |name, kind|
             kind == :required ? input(name) : optional_input(name)
