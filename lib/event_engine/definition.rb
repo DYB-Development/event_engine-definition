@@ -9,6 +9,7 @@ require "event_engine/event_schema"
 require "event_engine/schema_registry"
 require "event_engine/lifecycle_definition"
 require "event_engine/dsl_compiler"
+require "event_engine/definition/configuration"
 
 module EventEngine
   module Definition
@@ -23,6 +24,18 @@ module EventEngine
 
       def reset_publisher!
         @publisher = nil
+      end
+
+      def configuration
+        @configuration ||= Configuration.new
+      end
+
+      def configure
+        yield(configuration)
+      end
+
+      def reset_configuration!
+        @configuration = nil
       end
     end
   end
