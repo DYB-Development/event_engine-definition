@@ -12,10 +12,10 @@ module EventEngine
 
     ENVELOPE_KEYS = DslCompiler::RESERVED_INPUT_NAMES
 
-    def self.write(path, event_schema, emit: "EventEngine.emit")
+    def self.write(path, event_schema, root_module: "EventEngine", emit: "EventEngine.emit")
       File.open(path, "w") do |io|
         io.write(HEADER)
-        io.write("module EventEngine\n")
+        io.write("module #{root_module}\n")
 
         events_by_domain(event_schema).each do |domain, event_names|
           write_domain_module(io, event_schema, domain, event_names, emit)

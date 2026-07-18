@@ -74,6 +74,12 @@ module EventEngine
       assert_includes source, "EventEngine::Definition.publisher.publish("
     end
 
+    test "the root module is configurable" do
+      source = generate(schema_with(required_inputs: [:cow]), root_module: "MarketingEvents")
+
+      assert_includes source, "module MarketingEvents"
+    end
+
     test "passes the domain to emit" do
       source = generate(schema_with(required_inputs: [:cow]))
 
