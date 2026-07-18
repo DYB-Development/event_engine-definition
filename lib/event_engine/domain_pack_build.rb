@@ -69,7 +69,8 @@ module EventEngine
         root_module: @root_module,
         emit: PORT_EMIT,
         header: @header,
-        group_by_domain: false
+        group_by_domain: false,
+        schema_filename: SCHEMA_FILENAME
       )
     end
   end

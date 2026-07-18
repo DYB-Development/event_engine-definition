@@ -38,5 +38,14 @@ module EventEngine
         assert_equal "lead_created", schema.first["event_name"]
       end
     end
+
+    test "the generated helper exposes a schema_path accessor" do
+      Dir.mktmpdir do |dir|
+        build_into(dir)
+
+        source = File.read(File.join(dir, "marketing_events.rb"))
+        assert_includes source, "def self.schema_path"
+      end
+    end
   end
 end
