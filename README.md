@@ -13,7 +13,7 @@ Requires Ruby `>= 3.2.0`.
 Add the gem to your Gemfile:
 
 ```ruby
-gem "event_engine-definition"
+gem "event_engine-event_definition"
 ```
 
 Then run `bundle install`, and require it:
@@ -65,7 +65,7 @@ Read each payload line as: *"the event carries `lead_id`, and its value comes fr
 
 ### Generate the pack (a build step)
 
-The helper doesn't exist until you generate it. `event_engine-definition` ships a rake task for that. Configure it once, then run it whenever a definition changes:
+The helper doesn't exist until you generate it. `event_engine-event_definition` ships a rake task for that. Configure it once, then run it whenever a definition changes:
 
 ```ruby
 # Rakefile (in your domain pack)
@@ -189,7 +189,7 @@ generated helper  ──publish(event)──►        schema's from:/attr: mapp
 + committed schema.json                       then dispatches, persists, brokers…
 ```
 
-A domain pack depends only on `event_engine-definition` to declare its events and build its helper file. In an app that also has `event_engine` installed, `event_engine` provides a real publisher adapter and assigns it to `EventEngine::Definition.publisher`, so calling a generated helper hands the event to the full runtime. Nothing in this gem knows how events are dispatched — that decision lives entirely in `event_engine`.
+A domain pack depends only on `event_engine-event_definition` to declare its events and build its helper file. In an app that also has `event_engine` installed, `event_engine` provides a real publisher adapter and assigns it to `EventEngine::Definition.publisher`, so calling a generated helper hands the event to the full runtime. Nothing in this gem knows how events are dispatched — that decision lives entirely in `event_engine`.
 
 ## Development
 

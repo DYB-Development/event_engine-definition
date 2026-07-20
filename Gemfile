@@ -2,7 +2,7 @@
 
 source "https://rubygems.org"
 
-# Specify your gem's dependencies in event_engine-definition.gemspec
+# Specify your gem's dependencies in event_engine-event_definition.gemspec
 gemspec
 
 gem "irb"
